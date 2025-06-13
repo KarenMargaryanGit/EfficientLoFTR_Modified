@@ -1,0 +1,7 @@
+name: eloftr_2
+channels:
+  - pytorch
+  - nvidia
+dependencies:
+  - python=3.9
+  - pip
