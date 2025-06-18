@@ -1,0 +1,3 @@
+image_a_path,image_b_path,lat_a,lon_a,alt_a,lat_b,lon_b,alt_b,angle
+train_dataset_sample/images/pair_0002/drone.png,train_dataset_sample/images/pair_0002/satellite.png, 40.224694828129714, 43.923846123674664,100,40.22460303828168, 43.92479548479198,400,15
+train_dataset_sample/images/pair_0001/drone.png,train_dataset_sample/images/pair_0001/satellite.png, 40.22460060140922, 43.921762169285664,100,40.223941730975994, 43.92177377610398,400,15

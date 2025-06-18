@@ -1,4 +1,6 @@
-from src.config.default import _CN as cfg
+from src.config.default import _CN as cfg  # Use the actual path and variable name in your project
+
+from configs.data.my_drone_config import cfg as data_cfg
 
 # training config
 cfg.TRAINER.CANONICAL_LR = 8e-3
