@@ -25,7 +25,6 @@ from src.utils.misc import tqdm_joblib
 from src.utils import comm
 from src.datasets.megadepth import MegaDepthDataset
 from src.datasets.scannet import ScanNetDataset
-from src.datasets.file import FileDataset
 from src.datasets.sampler import RandomConcatSampler
 
 
@@ -36,7 +35,6 @@ class MultiSceneDataModule(pl.LightningDataModule):
     """
     def __init__(self, args, config):
         super().__init__()
-        self.config = config
 
         # 1. data config
         # Train and Val should from the same data source
@@ -208,15 +206,6 @@ class MultiSceneDataModule(pl.LightningDataModule):
                        min_overlap_score=0.,
                        pose_dir=None):
         """ Setup train / val / test set"""
-        data_source = self.trainval_data_source if mode in ['train', 'val'] else self.test_data_source
-        if data_source == 'File':
-            img_size = self.config.DATASET.TRAIN_IMG_SIZE if mode == 'train' else self.config.DATASET.VAL_IMG_SIZE
-            augment_fn = self.augment_fn if mode == 'train' else None
-            return FileDataset(data_root,
-                               scene_list_path,
-                               mode=mode,
-                               img_size=img_size,
-                               augment_fn=augment_fn)
         with open(scene_list_path, 'r') as f:
             npz_names = [name.split()[0] for name in f.readlines()]
 
@@ -326,17 +315,6 @@ class MultiSceneDataModule(pl.LightningDataModule):
                         depth_padding=self.mgdpt_depth_pad,
                         augment_fn=augment_fn,
                         coarse_scale=self.coarse_scale))(name)
-                    for name in npz_names)
-            elif data_source == 'File':
-                datasets = Parallel(n_jobs=math.floor(len(os.sched_getaffinity(0)) * 0.9 / comm.get_local_size()))(
-                    delayed(lambda x: _build_dataset(
-                        FileDataset,
-                        data_root,
-                        osp.join(npz_dir, x),
-                        mode=mode,
-                        min_overlap_score=min_overlap_score,
-                        augment_fn=augment_fn,
-                        pose_dir=pose_dir))(name)
                     for name in npz_names)
             else:
                 raise ValueError(f'Unknown dataset: {data_source}')

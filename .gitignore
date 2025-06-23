@@ -1,4 +1,4 @@
 # Ignore Python cache files and directories
-__pycache__/
+*/__pycache__/
 
 weights/eloftr_outdoor.ckpt

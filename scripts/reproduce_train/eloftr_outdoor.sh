@@ -11,16 +11,16 @@ cd $PROJECT_DIR
 TRAIN_IMG_SIZE=832
 
 n_nodes=1
-n_gpus_per_node=1
+n_gpus_per_node=4
 torch_num_workers=4
 batch_size=5
 pin_memory=true
 
 DEFAULT_EXP_NAME=''
 EXP_NAME=${1:-${DEFAULT_EXP_NAME}}
-exp_name="outdoor-ds-bs=$(($n_gpus_per_node * $n_nodes * $batch_size))-${EXP_NAME}"
+exp_name="outdoor-ds-${TRAIN_IMG_SIZE}-bs=$(($n_gpus_per_node * $n_nodes * $batch_size))-${EXP_NAME}"
 main_cfg_path="configs/loftr/eloftr_full.py"
-data_cfg_path="configs/data/drone_train.py"
+data_cfg_path="configs/data/megadepth_trainval_${TRAIN_IMG_SIZE}.py"
 
 python -u ./train.py \
     ${data_cfg_path} \

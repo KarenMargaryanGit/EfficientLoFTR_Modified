@@ -58,10 +58,9 @@ class ImagePositionMatcher:
             _default_cfg['half'] = True
 
         self.matcher =  LoFTR(config=_default_cfg)
-        self.matcher.load_state_dict(torch.load("weights/eloftr_outdoor.ckpt",map_location=torch.device('cpu'))['state_dict'])
-        # print(self.matcher)
-        
+        self.matcher.load_state_dict(torch.load("/home/garik/PycharmProjects/Eloftr/EfficientLoFTR/weights/eloftr_outdoor.ckpt",map_location=torch.device('cpu'))['state_dict'])
         self.matcher = reparameter(self.matcher)  # no reparameterization will lead to low performance
+
         if self.precision == 'fp16':
             self.matcher = self.matcher.half()
 
@@ -130,12 +129,6 @@ class ImagePositionMatcher:
             cropped_tile = self._merge_and_crop(near_tiles, target_lat, target_lon)
             scale_x_2, scale_y_2 = 1,1
             img1_tensor = self._to_tensor(cropped_tile)
-
-        # Save the img0_tensor as an image for debugging
-        img0_save = (img0_tensor.squeeze().cpu().numpy() * 255).astype(np.uint8)
-        cv.imwrite("img0.png", img0_save)
-        img1_save = (img1_tensor.squeeze().cpu().numpy() * 255).astype(np.uint8)
-        cv.imwrite("img1.png", img1_save)
 
         mkpts0, mkpts1, mconf = self._run_matcher(img0_tensor, img1_tensor)
         mkpts0_f, mkpts1_f = self._filter_matches(mkpts0, mkpts1, mconf,conf_thresh=0.3, use_ransac=True,   ransac_thresh=15)
@@ -370,6 +363,7 @@ class ImagePositionMatcher:
 
         rotate_and_crop_largest(full, 10)
 
+
         # Ensure the crop stays inside the full image
         center_y = max(h // 2, min(full.shape[0] - h // 2, center_y))
         center_x = max(w // 2, min(full.shape[1] - w // 2, center_x))
@@ -444,14 +438,12 @@ with open(os.path.join("Flight_4", "logs_14_10.json"), 'r') as file:
         logs.append(json.loads(line))
 
 
-# for i in range(2,5,1):
-#     target_lat, target_lon = logs[i]["vslam_gps"]
-#     heading = (logs[i]["heading"] + 270)%360
-#     print(target_lat, target_lon)
-#     posMatcher.match(cv.imread(f"Flight_4/image_{i}_original.jpg", cv.IMREAD_GRAYSCALE), target_lat, target_lon, heading = heading, method = "full_4")
-#     print("--------------------------------------------------")
+for i in range(2,9,1):
+    target_lat, target_lon = logs[i]["vslam_gps"]
+    heading = (logs[i]["heading"] + 270)%360
+    print(target_lat, target_lon)
+    posMatcher.match(cv.imread(f"Flight_4/image_{i}_original.jpg", cv.IMREAD_GRAYSCALE), target_lat, target_lon, heading = heading, method = "full_4")
 
-# print(logs)
 
 
 # with open(os.path.join("../../../logger/Flight_4", "logs.json"), 'r') as file:
@@ -463,52 +455,3 @@ with open(os.path.join("Flight_4", "logs_14_10.json"), 'r') as file:
 #     heading = (logs[i]["heading"] + 270)%360
 #     #print(target_lat, target_lon)
 #     posMatcher.match(cv.imread(f"../../../logger/Flight_4/image_{i}.jpg", cv.IMREAD_GRAYSCALE), target_lat, target_lon, heading = heading, method= "full_4")
-
-
-
-def grid_indices_from_points(points, H, W, downscale=8):
-    y = np.clip((points[:, 1] / downscale).astype(int), 0, H // downscale - 1)
-    x = np.clip((points[:, 0] / downscale).astype(int), 0, W // downscale - 1)
-    return y * (W // downscale) + x
-
-input_size = (320, 320)   # Set to your training size
-grid_size = 8             # Set to your training grid size
-H, W = input_size
-HW = (H // grid_size) * (W // grid_size)
-out_dir = "data/pseudo_labels"
-os.makedirs(out_dir, exist_ok=True)
-
-for i in range(2, 5, 1):
-    target_lat, target_lon = logs[i]["vslam_gps"]
-    heading = (logs[i]["heading"] + 270) % 360
-    print(target_lat, target_lon)
-    mkpts0_orig, mkpts1_orig = posMatcher.match(
-        cv.imread(f"Flight_4/image_{i}_original.jpg", cv.IMREAD_GRAYSCALE),
-        target_lat, target_lon, heading=heading, method="full_4"
-    )
-    print("--------------------------------------------------")
-
-    # --- Saving pseudo-labels in ELoFTR format ---
-    indexB = np.full(HW, -1, dtype=np.int64)
-    mask = np.zeros(HW, dtype=np.float32)
-
-    # Check for valid matches
-    if mkpts0_orig is not None and mkpts1_orig is not None and len(mkpts0_orig) > 0 and len(mkpts1_orig) > 0:
-        idxA = grid_indices_from_points(mkpts0_orig, H, W, downscale=grid_size)
-        idxB = grid_indices_from_points(mkpts1_orig, H, W, downscale=grid_size)
-        for a, b in zip(idxA, idxB):
-            indexB[a] = b
-            mask[a] = 1.0
-
-        imgA_base = f"image_{i}_original"
-        imgB_base = f"temp_cropped_{i}"
-        np.savez_compressed(
-            os.path.join(out_dir, f"{imgA_base}_{imgB_base}.npz"),
-            indexB=indexB,
-            mask=mask
-        )
-        print(f"Saved pseudo-labels for {imgA_base} <-> {imgB_base}")
-    else:
-        print(f"No valid matches found for i={i}, pseudo-label not saved.")
-
-print(logs)

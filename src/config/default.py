@@ -72,19 +72,16 @@ _CN.DATASET = CN()
 # 1. data config
 # training and validating
 _CN.DATASET.TRAINVAL_DATA_SOURCE = None  # options: ['ScanNet', 'MegaDepth']
-_CN.DATASET.VAL_DATA_SOURCE = None
 _CN.DATASET.TRAIN_DATA_ROOT = None
 _CN.DATASET.TRAIN_POSE_ROOT = None  # (optional directory for poses)
 _CN.DATASET.TRAIN_NPZ_ROOT = None
 _CN.DATASET.TRAIN_LIST_PATH = None
 _CN.DATASET.TRAIN_INTRINSIC_PATH = None
-_CN.DATASET.TRAIN_IMG_SIZE = None
 _CN.DATASET.VAL_DATA_ROOT = None
 _CN.DATASET.VAL_POSE_ROOT = None  # (optional directory for poses)
 _CN.DATASET.VAL_NPZ_ROOT = None
 _CN.DATASET.VAL_LIST_PATH = None    # None if val data from all scenes are bundled into a single npz file
 _CN.DATASET.VAL_INTRINSIC_PATH = None
-_CN.DATASET.VAL_IMG_SIZE = None
 _CN.DATASET.FP16 = False
 # testing
 _CN.DATASET.TEST_DATA_SOURCE = None
