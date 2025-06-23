@@ -94,7 +94,7 @@ def main():
     
     # scale lr and warmup-step automatically
     args.gpus = _n_gpus = setup_gpus(args.gpus)
-    config.TRAINER.WORLD_SIZE = _n_gpus * args.num_nodes
+    config.TRAINER.WORLD_SIZE = max(1, _n_gpus * args.num_nodes)
     config.TRAINER.TRUE_BATCH_SIZE = config.TRAINER.WORLD_SIZE * args.batch_size
     _scaling = config.TRAINER.TRUE_BATCH_SIZE / config.TRAINER.CANONICAL_BS
     config.TRAINER.SCALING = _scaling
@@ -131,11 +131,15 @@ def main():
         callbacks.append(ckpt_callback)
 
     # Lightning Trainer
+    plugins = [DDPPlugin(find_unused_parameters=False,
+                         num_nodes=args.num_nodes,
+                         sync_batchnorm=config.TRAINER.WORLD_SIZE > 0)]
+    if _n_gpus > 0:
+        plugins.append(NativeMixedPrecisionPlugin())
+
     trainer = pl.Trainer.from_argparse_args(
         args,
-        plugins=[DDPPlugin(find_unused_parameters=False,
-                          num_nodes=args.num_nodes,
-                          sync_batchnorm=config.TRAINER.WORLD_SIZE > 0), NativeMixedPrecisionPlugin()],
+        plugins=plugins,
         gradient_clip_val=config.TRAINER.GRADIENT_CLIPPING,
         callbacks=callbacks,
         logger=logger,
