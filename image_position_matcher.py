@@ -58,7 +58,7 @@ class ImagePositionMatcher:
             _default_cfg['half'] = True
 
         self.matcher =  LoFTR(config=_default_cfg)
-        self.matcher.load_state_dict(torch.load("/home/garik/PycharmProjects/Eloftr/EfficientLoFTR/weights/eloftr_outdoor.ckpt",map_location=torch.device('cpu'))['state_dict'])
+        self.matcher.load_state_dict(torch.load("weights/eloftr_outdoor.ckpt",map_location=torch.device('cpu'))['state_dict'])
         self.matcher = reparameter(self.matcher)  # no reparameterization will lead to low performance
 
         if self.precision == 'fp16':
