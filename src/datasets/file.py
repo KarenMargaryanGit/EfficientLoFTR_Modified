@@ -51,6 +51,7 @@ class FileDataset(data.Dataset):
             'T_0to1': torch.empty(0),
             'pair_id': idx,
             'pair_names': (img_name0, img_name1),
+            'dataset_name': 'File'
         }
 
         if self.augment_fn:

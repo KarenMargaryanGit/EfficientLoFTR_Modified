@@ -1,2 +1,58 @@
-pair_0001
-pair_0002
+------------------------------------------------------------------------------------------
+16.0 M    Trainable params
+0         Non-trainable params
+16.0 M    Total params
+64.101    Total estimated model params size (MB)
+Validation sanity check: 0it [00:00, ?it/s]2025-06-23 15:19:04.453 | INFO     | src.lightning.data:val_dataloader:361 - [rank:0/1]: Val Sampler and DataLoader re-init.
+Validation sanity check:   0%|                                                                                       | 0/2 [00:00<?, ?it/s]/home/linuxarmserver/miniconda3/envs/eloftr/lib/python3.8/site-packages/pytorch_lightning/plugins/precision/native_amp.py:108: FutureWarning: `torch.cuda.amp.autocast(args...)` is deprecated. Please use `torch.amp.autocast('cuda', args...)` instead.
+  with torch.cuda.amp.autocast():
+[rank0]: Traceback (most recent call last):
+[rank0]:   File "./train.py", line 158, in <module>
+[rank0]:     main()
+[rank0]:   File "./train.py", line 154, in main
+[rank0]:     trainer.fit(model, datamodule=data_module)
+[rank0]:   File "/home/linuxarmserver/miniconda3/envs/eloftr/lib/python3.8/site-packages/pytorch_lightning/trainer/trainer.py", line 458, in fit
+[rank0]:     self._run(model)
+[rank0]:   File "/home/linuxarmserver/miniconda3/envs/eloftr/lib/python3.8/site-packages/pytorch_lightning/trainer/trainer.py", line 756, in _run
+[rank0]:     self.dispatch()
+[rank0]:   File "/home/linuxarmserver/miniconda3/envs/eloftr/lib/python3.8/site-packages/pytorch_lightning/trainer/trainer.py", line 797, in dispatch
+[rank0]:     self.accelerator.start_training(self)
+[rank0]:   File "/home/linuxarmserver/miniconda3/envs/eloftr/lib/python3.8/site-packages/pytorch_lightning/accelerators/accelerator.py", line 96, in start_training
+[rank0]:     self.training_type_plugin.start_training(trainer)
+[rank0]:   File "/home/linuxarmserver/miniconda3/envs/eloftr/lib/python3.8/site-packages/pytorch_lightning/plugins/training_type/training_type_plugin.py", line 144, in start_training
+[rank0]:     self._results = trainer.run_stage()
+[rank0]:   File "/home/linuxarmserver/miniconda3/envs/eloftr/lib/python3.8/site-packages/pytorch_lightning/trainer/trainer.py", line 807, in run_stage
+[rank0]:     return self.run_train()
+[rank0]:   File "/home/linuxarmserver/miniconda3/envs/eloftr/lib/python3.8/site-packages/pytorch_lightning/trainer/trainer.py", line 842, in run_train
+[rank0]:     self.run_sanity_check(self.lightning_module)
+[rank0]:   File "/home/linuxarmserver/miniconda3/envs/eloftr/lib/python3.8/site-packages/pytorch_lightning/trainer/trainer.py", line 1107, in run_sanity_check
+[rank0]:     self.run_evaluation()
+[rank0]:   File "/home/linuxarmserver/miniconda3/envs/eloftr/lib/python3.8/site-packages/pytorch_lightning/trainer/trainer.py", line 962, in run_evaluation
+[rank0]:     output = self.evaluation_loop.evaluation_step(batch, batch_idx, dataloader_idx)
+[rank0]:   File "/home/linuxarmserver/miniconda3/envs/eloftr/lib/python3.8/site-packages/pytorch_lightning/trainer/evaluation_loop.py", line 174, in evaluation_step
+[rank0]:     output = self.trainer.accelerator.validation_step(args)
+[rank0]:   File "/home/linuxarmserver/miniconda3/envs/eloftr/lib/python3.8/site-packages/pytorch_lightning/accelerators/accelerator.py", line 226, in validation_step
+[rank0]:     return self.training_type_plugin.validation_step(*args)
+[rank0]:   File "/home/linuxarmserver/miniconda3/envs/eloftr/lib/python3.8/site-packages/pytorch_lightning/plugins/training_type/ddp.py", line 322, in validation_step
+[rank0]:     return self.model(*args, **kwargs)
+[rank0]:   File "/home/linuxarmserver/miniconda3/envs/eloftr/lib/python3.8/site-packages/torch/nn/modules/module.py", line 1553, in _wrapped_call_impl
+[rank0]:     return self._call_impl(*args, **kwargs)
+[rank0]:   File "/home/linuxarmserver/miniconda3/envs/eloftr/lib/python3.8/site-packages/torch/nn/modules/module.py", line 1562, in _call_impl
+[rank0]:     return forward_call(*args, **kwargs)
+[rank0]:   File "/home/linuxarmserver/miniconda3/envs/eloftr/lib/python3.8/site-packages/torch/nn/parallel/distributed.py", line 1636, in forward
+[rank0]:     else self._run_ddp_forward(*inputs, **kwargs)
+[rank0]:   File "/home/linuxarmserver/miniconda3/envs/eloftr/lib/python3.8/site-packages/torch/nn/parallel/distributed.py", line 1454, in _run_ddp_forward
+[rank0]:     return self.module(*inputs, **kwargs)  # type: ignore[index]
+[rank0]:   File "/home/linuxarmserver/miniconda3/envs/eloftr/lib/python3.8/site-packages/torch/nn/modules/module.py", line 1553, in _wrapped_call_impl
+[rank0]:     return self._call_impl(*args, **kwargs)
+[rank0]:   File "/home/linuxarmserver/miniconda3/envs/eloftr/lib/python3.8/site-packages/torch/nn/modules/module.py", line 1562, in _call_impl
+[rank0]:     return forward_call(*args, **kwargs)
+[rank0]:   File "/home/linuxarmserver/miniconda3/envs/eloftr/lib/python3.8/site-packages/pytorch_lightning/overrides/base.py", line 57, in forward
+[rank0]:     output = self.module.validation_step(*inputs, **kwargs)
+[rank0]:   File "/home/linuxarmserver/Documents/EfficientLoFTR_Modified/src/lightning/lightning_loftr.py", line 165, in validation_step
+[rank0]:     self._trainval_inference(batch)
+[rank0]:   File "/home/linuxarmserver/Documents/EfficientLoFTR_Modified/src/lightning/lightning_loftr.py", line 105, in _trainval_inference
+[rank0]:     compute_supervision_coarse(batch, self.config)
+[rank0]:   File "/home/linuxarmserver/Documents/EfficientLoFTR_Modified/src/loftr/utils/supervision.py", line 138, in compute_supervision_coarse
+[rank0]:     assert len(set(data['dataset_name'])) == 1, "Do not support mixed datasets training!"
+[rank0]: KeyError: 'dataset_name'
